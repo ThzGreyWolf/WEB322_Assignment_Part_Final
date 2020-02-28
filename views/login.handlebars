@@ -1,0 +1,35 @@
+{{#if logInMode}}
+    <section id="loginForm">
+        <h3>Log In</h3>
+        <form action="/logIn" method="POST">
+            <lable for="email">Email</lable><br>
+            <input type="text" id="email" name="email"><br>
+            <br>
+            <lable for="password">Password</lable><br>
+            <input type="password" id="password" name="password"><br>
+            <br>
+            <input type="submit" value="Log In">
+        </form>
+        <p>New around here? <span><a href="/createAcc">Create Account</a></span></p>
+    </section>
+{{else}}
+    <section id="createForm">
+        <h3>Create Account</h3>
+        <form action="/createAcc" method="POST">
+            <lable for="name">Your name</lable><br>
+            <input type="text" id="name" name="name"><br>
+            <br>
+            <lable for="email">Email</lable><br>
+            <input type="text" id="email" name="email"><br>
+            <br>
+            <lable for="password">Password</lable><br>
+            <input type="password" id="password" name="password"><br>
+            <br>
+            <lable for="passwordConf">Password again</lable><br>
+            <input type="password" id="passwordConf" name="passwordConf"><br>
+            <br>
+            <input type="submit" value="Create Account">
+        </form>
+        <p>Already have an Account? <span><a href="/login">Log In</a></span></p>
+    </section>
+{{/if}}

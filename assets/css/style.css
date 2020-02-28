@@ -1,0 +1,191 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+body {
+    background-image: linear-gradient(#656565 1%, #dbdbdb 89%);
+    font-family: 'Merriweather', serif;
+}
+
+header {
+    padding: .5rem 5rem;
+    box-shadow: 0px 5px 10px #00797e;
+}
+
+header * {
+    display: inline-block;
+}
+
+header img {
+    height: 100px;
+}
+
+nav {
+    float: right;
+    padding: 2rem 0
+}
+
+nav li {
+    margin: .75rem;
+    font-size: 1.1rem;
+}
+
+nav li:hover {
+    color: #ebc92c;
+}
+
+img {
+    height: auto;
+    width: 100%;
+}
+
+main {
+    max-width: 100rem;
+    margin: 2rem auto;
+}
+
+main a, main input[type=submit] {
+    border: 1px solid #000;
+    border-radius: 5px;
+
+    background-color: #ebc92c;
+
+    display: inline-block;
+    padding: .25rem;
+    margin: 1rem 0;
+    width: 100%;
+}
+
+#promo {
+    padding: 1rem 2rem 2rem 2rem;
+    box-shadow: inset 0 2.5px 10px #00797e;
+}
+
+#promo > h1 { 
+    margin: 2rem;
+    font-size: 2rem;
+}
+
+#promo > div {
+    max-width: 25rem;
+    /* margin: 0 auto; */
+    padding: 1rem;
+    box-shadow: 0px 5px 10px #00797e;
+}
+
+#promo > div > a {
+    width: 10rem;
+}
+
+
+.homeProdSecs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    margin: .5rem;
+}
+
+.homeProdSecs > div {
+    margin: .5rem .25rem;
+}
+
+#cats, #homeBSTitle, #promo {
+    text-align: center;
+}
+
+#cats img {
+    margin-top: .5rem;
+}
+
+#productsPage {
+    display: grid;
+    grid-template-columns: 1fr 6fr
+}
+
+#prodCats {
+    margin: .5rem .25rem;
+}
+
+#prodCats > ul {
+    padding: 1rem;
+    list-style-type: none;
+}
+
+#prodCats li {
+    margin: 1rem;
+    text-align: center;
+}
+
+#prodCats a {
+    margin: 0;
+}
+
+#productList {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    margin: .5rem;
+}
+
+#productList > div {
+    margin: .5rem .25rem;
+}
+
+#loginForm, #createForm {
+    max-width: 25rem;
+    margin: 0 auto;
+    padding: 1rem;
+
+    text-align: center;
+}
+
+#loginForm > form, #createForm > form {
+    padding: 1rem;
+    margin: 2rem 1rem;
+    box-shadow: 0px 5px 10px #00797e;
+
+    text-align: left;
+    background-color: #dbdbdb;
+}
+
+#loginForm input[type=text], #createForm input[type=text], #loginForm input[type=password], #createForm input[type=password] {
+    width: 90%;
+    padding: 10px 5%;
+    margin: .5rem 0 0 0;
+
+    border-radius: 5px;
+}
+
+#loginForm input[type=submit], #createForm input[type=submit] {
+    font-family: 'Merriweather', serif;
+}
+
+#loginForm input[type=submit]:hover, #createForm input[type=submit]:hover {
+    cursor: pointer;
+}
+
+footer {
+    /* height: 3rem; */
+    /* line-height: 3rem; */
+    /* text-align: center; */
+    box-shadow: 0px -5px 10px #00797e;
+
+    padding: 1.5rem;
+}
+
+footer div {
+    float: right;
+    font-size: 1rem;
+}
+
+footer div * {
+    margin: 0 1rem;
+}
+
+/* @media(max-width: 500px) { 
+
+} */

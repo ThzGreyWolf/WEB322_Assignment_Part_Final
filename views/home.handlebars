@@ -1,0 +1,27 @@
+{{!-- Promo --}}
+<section id="promo">
+    {{!-- TODO:NOTE: Have to list of headdings to loop through --}}
+    <h1 id="promoH1">Welcome to our Amazon!!</h1>
+    <div>
+        <h2>Join us for a better experience</h2>
+        <a href="/createAcc">Join in</a>
+    </div>
+</section>
+{{!-- Categories --}}
+<section id="cats" class="homeProdSecs">
+    {{#each categories}}
+        <div>
+            {{this.name}}
+            <img src="{{this.img}}" alt="Category Image">
+        </div>
+    {{/each}}
+</section>
+{{!-- Best sellers --}}
+<h3 id="homeBSTitle">Best Sellers</h3>
+<section id="topSold" class="homeProdSecs">
+    {{#each topSold}}
+        <div>
+            <img src="{{this.img}}" alt="Product Image">
+        </div>
+    {{/each}}
+</section>
