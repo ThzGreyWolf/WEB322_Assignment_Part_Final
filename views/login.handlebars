@@ -3,10 +3,12 @@
         <h3>Log In</h3>
         <form action="/logIn" method="POST">
             <lable for="email">Email</lable><br>
-            <input type="text" id="email" name="email"><br>
+            <input type="text" id="email" name="email" {{#if emailErr}}class="errBox"{{/if}}><br>
+            {{#if emailErr}}<lable for="email" class="errMess"><i class="fas fa-exclamation-circle"></i>Enter your Email</lable>{{/if}}
             <br>
             <lable for="password">Password</lable><br>
-            <input type="password" id="password" name="password"><br>
+            <input type="password" id="password" name="password" {{#if passErr}} class="errBox" {{/if}}><br>
+            {{#if passErr}}<lable for="password" class="errMess"><i class="fas fa-exclamation-circle"></i>Enter your Password</lable>{{/if}}
             <br>
             <input type="submit" value="Log In">
         </form>

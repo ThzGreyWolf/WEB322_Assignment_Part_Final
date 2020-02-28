@@ -168,6 +168,15 @@ main a, main input[type=submit] {
     cursor: pointer;
 }
 
+.errBox {
+    border-color: #f00;
+}
+
+.errMess {
+    color: #f00;
+    font-size: 1rem;
+}
+
 footer {
     /* height: 3rem; */
     /* line-height: 3rem; */
@@ -186,6 +195,35 @@ footer div * {
     margin: 0 1rem;
 }
 
-/* @media(max-width: 500px) { 
+@media(max-width: 750px) { 
+    header > h4 {
+        display: none;
+    }
 
-} */
+    .homeProdSecs {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    #productList {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    footer > * {
+        float: left;
+        text-align: center;
+    }
+}
+
+@media(max-width: 500px) {
+    header {
+        padding: .5rem 2.5rem;
+    }
+
+    header li {
+        display: block;
+    }
+
+    #productList {
+        grid-template-columns: 1fr;
+    }
+}

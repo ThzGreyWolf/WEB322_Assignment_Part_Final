@@ -44,16 +44,26 @@ app.get("/createAcc", (req, res) => {
 app.use(bodyParser.urlencoded({ extended: false }))
 
 app.post("/logIn", (req, res) => {
-    const errorMessages = [];
+    let emailNull = false;
+    let passNull = false
 
-    if(req.body.email == "" || req.body.password == "") { errorMessages.push("Email and Password is required to log in!"); } else {
-        // TODO: DO CHECK
+    if(req.body.email == "") { emailNull = true; }
+    if(req.body.password == "") { passNull = true; }
+
+    if(emailNull || passNull) {
+        res.render("login", {
+            title:"Log In",
+            logInMode: true,
+            emailErr: emailNull,
+            passErr: passNull
+        });
+    } else {
+        res.render("home", {
+            title:"Home",
+            categories: data.getCategories(),
+            topSold: data.getProductsSorted("bs", 4)
+        });
     }
-
-    res.render("login", {
-        title:"Log In",
-        logInMode: true
-    });
 });
 
 app.post("/createAcc", (req, res) => {
