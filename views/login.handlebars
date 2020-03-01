@@ -19,16 +19,20 @@
         <h3>Create Account</h3>
         <form action="/createAcc" method="POST">
             <lable for="name">Your name</lable><br>
-            <input type="text" id="name" name="name"><br>
+            <input type="text" id="name" name="name" value="{{nameVal}}" {{#if nameErr}}class="errBox"{{/if}}><br>
+            {{#if nameErr}}<lable for="name" class="errMess"><i class="fas fa-exclamation-circle"></i>Enter your Name</lable>{{/if}}
             <br>
             <lable for="email">Email</lable><br>
-            <input type="text" id="email" name="email"><br>
+            <input type="text" id="email" name="email" value="{{emailVal}}" {{#if emailErr}}class="errBox"{{/if}}><br>
+            {{#if emailErr}}<lable for="email" class="errMess"><i class="fas fa-exclamation-circle"></i>{{emailErr}}</lable>{{/if}}
             <br>
             <lable for="password">Password</lable><br>
-            <input type="password" id="password" name="password"><br>
+            <input type="password" id="password" name="password" value="{{passVal}}" {{#if passErr}}class="errBox"{{/if}}><br>
+            {{#if passErr}}<lable for="email" class="errMess"><i class="fas fa-exclamation-circle"></i>{{passErr}}</lable>{{/if}}
             <br>
             <lable for="passwordConf">Password again</lable><br>
-            <input type="password" id="passwordConf" name="passwordConf"><br>
+            <input type="password" id="passwordConf" name="passwordConf" value="{{rePassVal}}" {{#if rePassErr}}class="errBox"{{/if}}><br>
+            {{#if rePassErr}}<lable for="email" class="errMess"><i class="fas fa-exclamation-circle"></i>{{rePassErr}}</lable>{{/if}}
             <br>
             <input type="submit" value="Create Account">
         </form>
