@@ -177,6 +177,37 @@ main a, main input[type=submit] {
     font-size: 1rem;
 }
 
+#dashboard {
+    display: grid;
+    grid-template-columns: 1fr 6fr;
+    box-shadow: 0 2.5px 10px #00797e;
+}
+
+#dashboard > #menu ul {
+    list-style: none;
+    padding: 1rem;
+}
+
+#dashboard > #menu li {
+    padding: 0 1rem;
+    width: 80%;
+}
+
+#dashboard > #views {
+    text-align: center;
+    box-shadow: inset 0 2.5px 10px #00797e;
+    height: 30rem;
+}
+
+#dashboard > #views div {
+    padding: 2rem;
+    display: none;
+}
+
+#dashboard > #views > #active {
+    display: block;
+}
+
 footer {
     /* height: 3rem; */
     /* line-height: 3rem; */

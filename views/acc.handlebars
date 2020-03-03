@@ -1,0 +1,16 @@
+<section id="dashboard">
+    <div id="menu">
+        <ul>
+            <li><a href="/accHome">Home</a></li>
+            <li><a href="/accOrd">Orders</a></li>
+        </ul>
+    </div>
+    <div id="views">
+        <div {{#if summary}}id="active"{{/if}}>
+            <h2>Welcome {{userName}} to Amazon!!</h2>
+        </div>
+        <div {{#if orders}}id="active"{{/if}}>
+            <p>No Orders...</p>
+        </div>
+    </div>
+</section>

@@ -47,6 +47,22 @@ app.get("/createAcc", (req, res) => {
     });
 });
 
+app.get("/accHome", (req, res) => {
+    res.render("acc", {
+        title: "Account",
+        summary: true,
+        orders: false
+    });
+});
+
+app.get("/accOrd", (req, res) => {
+    res.render("acc", {
+        title: "Account",
+        summary: false,
+        orders: true
+    });
+});
+
 app.use(bodyParser.urlencoded({ extended: false }))
 
 app.post("/logIn", (req, res) => {
@@ -64,11 +80,7 @@ app.post("/logIn", (req, res) => {
             passErr: passNull
         });
     } else {
-        res.render("home", {
-            title:"Home",
-            categories: data.getCategories(),
-            topSold: data.getProductsSorted("bs", 4)
-        });
+        res.redirect("/");
     }
 });
 
@@ -135,7 +147,13 @@ app.post("/createAcc", (req, res) => {
         };
 
         mailSender.send(mail).then(() => {
-            res.redirect("/");
+            // res.redirect("/accHome");
+            res.render("acc", {
+                title: "Account",
+                summary: true,
+                orders: false,
+                userName: name
+            });
         }).catch(err => {
             console.log(`Error ${err}`);
         });
