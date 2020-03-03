@@ -17,7 +17,9 @@ const app = express();
 
 app.engine('handlebars', exphbs());
 app.set('view engine', 'handlebars');
-mailSender.setApiKey(`${process.env.SENDGRID_API_KEY}`);
+// TODO: NOTE: removed env var for heroku deploy
+// mailSender.setApiKey(`${process.env.SENDGRID_API_KEY}`);
+mailSender.setApiKey(`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`);
 
 app.use(express.static("assets"));
 
