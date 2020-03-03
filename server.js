@@ -25,9 +25,9 @@ app.get("/", (req, res) => {
     res.render("home", {
         title:"Home",
         categories: data.getCategories(),
-        topSold: data.getProductsSorted("bs", 4),
-        loggedIn: loggedIn,
-        user: data.getUser(userEmail)
+        topSold: data.getProductsSorted("bs", 4)
+        // loggedIn: loggedIn,
+        // user: data.getUser(userEmail)
     });
 });
 
@@ -61,8 +61,8 @@ app.get("/accHome", (req, res) => {
     res.render("acc", {
         title: "Account",
         summary: true,
-        orders: false,
-        user: data.getUser(userEmail)
+        orders: false
+        // user: data.getUser(userEmail)
     });
 });
 
@@ -161,14 +161,20 @@ app.post("/createAcc", (req, res) => {
             logedIn = true;
             userEmail = email;
 
-            tempUser = {
-                name: name,
-                email: email,
-                password: password
-            }
-            data.addUser(tempUser);
+            // tempUser = {
+            //     name: name,
+            //     email: email,
+            //     password: password
+            // }
+            // data.addUser(tempUser);
             
-            res.redirect("/accHome");
+            // res.redirect("/accHome");
+            res.render("acc", {
+                title: "Account",
+                summary: true,
+                orders: false,
+                name: name
+            });
         }).catch(err => {
             console.log(`Error ${err}`);
         });
