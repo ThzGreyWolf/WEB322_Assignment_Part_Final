@@ -34,9 +34,9 @@ categories.push(new Category("cat1", "/img/product/placeholderImg.png"));
 categories.push(new Category("cat2", "/img/product/placeholderImg.png"));
 categories.push(new Category("cat3", "/img/product/placeholderImg.png"));
 
-users.push(new userInfo("admin", "admin@k1amazon.ca", "adminpass"));
-users.push(new userInfo("kiru", "kiru@live.ca", "password"));
-users.push(new userInfo("user", "user@gmail.com", "userpass"));
+// users.push(new userInfo("admin", "admin@k1amazon.ca", "adminpass"));
+// users.push(new userInfo("kiru", "kiru@live.ca", "password"));
+// users.push(new userInfo("user", "user@gmail.com", "userpass"));
 
 fakeProductsDB.push(new Product("Product0", 13.99, "/img/product/placeholderImg.png", categories[0], false, 10, 1));
 fakeProductsDB.push(new Product("Product1", 133.99, "/img/product/placeholderImg.png", categories[1], false, 10, 2));
@@ -48,7 +48,8 @@ fakeProductsDB.push(new Product("Product6", 25.99, "/img/product/placeholderImg.
 fakeProductsDB.push(new Product("Product7", 55.99, "/img/product/placeholderImg.png", categories[1], true, 10, 6));
 fakeProductsDB.push(new Product("Product8", 999.99, "/img/product/placeholderImg.png", categories[3], false, 10, 6));
 
-const UserDatabase = {
+// const UserDatabase = {
+const DatabaseQueries = {
     getUsers() {
         return users;
     },
@@ -64,10 +65,14 @@ const UserDatabase = {
         }
 
         return retVal;
-    }
-}
+    },
 
-const FakeDatabase = {
+    addUser(user) {
+        users.push(new userInfo(user.name, user.email, user.password));
+    },
+// }
+
+// const FakeDatabase = {
     getCategories() {
         return categories;
     },
@@ -123,5 +128,6 @@ const FakeDatabase = {
     }
 }
 
-module.exports = UserDatabase;
-module.exports = FakeDatabase;
+module.exports = DatabaseQueries;
+// module.exports = UserDatabase;
+// module.exports = FakeDatabase;

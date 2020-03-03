@@ -1,3 +1,7 @@
+// TODO: Figure out another way
+let loggedIn = false;
+let userEmail = null;
+
 const express = require("express");
 const exphbs = require("express-handlebars");
 const bodyParser = require('body-parser');
@@ -21,7 +25,9 @@ app.get("/", (req, res) => {
     res.render("home", {
         title:"Home",
         categories: data.getCategories(),
-        topSold: data.getProductsSorted("bs", 4)
+        topSold: data.getProductsSorted("bs", 4),
+        loggedIn: loggedIn,
+        user: data.getUser(userEmail)
     });
 });
 
@@ -34,10 +40,14 @@ app.get("/products", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-    res.render("login", {
-        title:"Log In",
-        logInMode: true
-    });
+    if(loggedIn) {
+        res.redirect("/");
+    } else {
+        res.render("login", {
+            title:"Log In",
+            logInMode: true
+        });
+    }
 });
 
 app.get("/createAcc", (req, res) => {
@@ -51,7 +61,8 @@ app.get("/accHome", (req, res) => {
     res.render("acc", {
         title: "Account",
         summary: true,
-        orders: false
+        orders: false,
+        user: data.getUser(userEmail)
     });
 });
 
@@ -147,13 +158,17 @@ app.post("/createAcc", (req, res) => {
         };
 
         mailSender.send(mail).then(() => {
-            // res.redirect("/accHome");
-            res.render("acc", {
-                title: "Account",
-                summary: true,
-                orders: false,
-                userName: name
-            });
+            logedIn = true;
+            userEmail = email;
+
+            tempUser = {
+                name: name,
+                email: email,
+                password: password
+            }
+            data.addUser(tempUser);
+            
+            res.redirect("/accHome");
         }).catch(err => {
             console.log(`Error ${err}`);
         });

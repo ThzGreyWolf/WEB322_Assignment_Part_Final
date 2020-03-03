@@ -3,8 +3,13 @@
     {{!-- TODO:NOTE: Have to list of headdings to loop through --}}
     <h1 id="promoH1">Welcome to our Amazon!!</h1>
     <div>
-        <h2>Join us for a better experience</h2>
-        <a href="/createAcc">Join in</a>
+        {{#if loggedIn}}
+            <h2>Welcome {{user.name}}</h2>
+            <a href="/accHome">Account</a>
+        {{else}}
+            <h2>Join us for a better experience</h2>
+            <a href="/createAcc">Join in</a>
+        {{/if}}
     </div>
 </section>
 {{!-- Categories --}}
