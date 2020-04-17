@@ -25,6 +25,7 @@
             <lable for="email">Email</lable><br>
             <input type="text" id="email" name="email" value="{{emailVal}}" {{#if emailErr}}class="errBox"{{/if}}><br>
             {{#if emailErr}}<lable for="email" class="errMess"><i class="fas fa-exclamation-circle"></i>{{emailErr}}</lable>{{/if}}
+            {{#if dubEmailErr}}<lable for="email" class="errMess"><i class="fas fa-exclamation-circle"></i>{{dubEmailErr}}</lable>{{/if}}
             <br>
             <lable for="password">Password</lable><br>
             <input type="password" id="password" name="password" value="{{passVal}}" {{#if passErr}}class="errBox"{{/if}}><br>

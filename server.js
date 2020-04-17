@@ -13,7 +13,7 @@ require('dotenv').config({
 });
 
 const data = require("./model/data");
-const userModel = require("../models/user");
+const userModel = require("./model/user");
 
 const app = express();
 
@@ -60,12 +60,25 @@ app.get("/createAcc", (req, res) => {
 });
 
 app.get("/accHome", (req, res) => {
-    res.render("acc", {
-        title: "Account",
-        summary: true,
-        orders: false,
-        name: data.getUser(userEmail).name
+    userModel.find({email:userEmail}).then((user) => {
+        const userName = user.name;
+        res.render("acc", {
+            title: "Account",
+            summary: true,
+            orders: false,
+            name: userName
+        });
+    }).catch((err) => {
+        console.log(`MDB find user err: ${err}`);
     });
+
+    // res.render("acc", {
+    //     title: "Account",
+    //     summary: true,
+    //     orders: false,
+    //     name: userName
+    //     // name: data.getUser(userEmail).name
+    // });
 });
 
 app.get("/accOrd", (req, res) => {
@@ -111,8 +124,14 @@ app.post("/createAcc", (req, res) => {
         emailErrMess = "Enter your Email";
     } else if(!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
         emailErrMess = "Email not Valid";
+    } else {
+        userModel.find({email:req.body.email}).then((user) => {
+            if(user) { emailErrMess = "An account with this email already exists"; }
+        }).catch((err) => {
+            console.log(`MDB find user err in post /createAcc: ${err}`);
+        });
     }
-
+    
     if(password == "") { 
         passErrMess = "Enter a Password"; 
     } else {
@@ -151,56 +170,58 @@ app.post("/createAcc", (req, res) => {
         rePassErrMess = "Passwords much match";
     }
 
-    if(!nameNull && emailErrMess == "" && passErrMess == "" && rePassErrMess == "") {
-        const mail = {
-            to: email,
-            from: `karuldas1@myseneca.ca`,
-            subject: `Thank you for creating an Amazon account`,
-            html: `<strong>Welcome ${name} to Amazon, Where products are unreal.</strong>`
-        };
+    setTimeout(() => {
+        if(!nameNull && emailErrMess == "" && passErrMess == "" && rePassErrMess == "") {
+            const mail = {
+                to: email,
+                from: `karuldas1@myseneca.ca`,
+                subject: `Thank you for creating an Amazon account`,
+                html: `<strong>Welcome ${name} to Amazon, Where products are unreal.</strong>`
+            };
 
-        mailSender.send(mail).then(() => {
-            logedIn = true;
-            userEmail = email;
+            mailSender.send(mail).then(() => {
+                logedIn = true;
+                userEmail = email;
 
-            tempUser = {
-                name: name,
-                email: email,
-                password: password
-            }
-            // data.addUser(tempUser);
+                tempUser = {
+                    name: name,
+                    email: email,
+                    password: password
+                }
+                // data.addUser(tempUser);
 
-            const user = new userModel(tempUser);
-            user.save().then(() => {
-                res.redirect("/accHome");
-            }).catch((err) => {
-                console.log(`MDB add user err: ${err}`);
+                const user = new userModel(tempUser);
+                user.save().then(() => {
+                    res.redirect("/accHome");
+                }).catch((err) => {
+                    console.log(`MDB add user err: ${err}`);
+                });
+
+                // res.redirect("/accHome");
+                // res.render("acc", {
+                //     title: "Account",
+                //     summary: true,
+                //     orders: false,
+                //     name: name
+                // });
+            }).catch(err => {
+                console.log(`Error ${err}`);
             });
-
-            // res.redirect("/accHome");
-            // res.render("acc", {
-            //     title: "Account",
-            //     summary: true,
-            //     orders: false,
-            //     name: name
-            // });
-        }).catch(err => {
-            console.log(`Error ${err}`);
-        });
-    } else {
-        res.render("login", {
-            title:"Create Account",
-            logInMode: false,
-            nameVal: name,
-            emailVal: email,
-            passVal: password,
-            rePassVal: passwordConf,
-            nameErr: nameNull,
-            emailErr: emailErrMess,
-            passErr: passErrMess,
-            rePassErr: rePassErrMess
-        });
-    }
+        } else {
+            res.render("login", {
+                title:"Create Account",
+                logInMode: false,
+                nameVal: name,
+                emailVal: email,
+                passVal: password,
+                rePassVal: passwordConf,
+                nameErr: nameNull,
+                emailErr: emailErrMess,
+                passErr: passErrMess,
+                rePassErr: rePassErrMess
+            });
+        }
+    }, 1000);
 });
 
 mongoose.connect(process.env.MDB_CONN_STR, {useNewUrlParser: true, useUnifiedTopology: true}).then(() => {
