@@ -13,6 +13,7 @@ require('dotenv').config({
 });
 
 const data = require("./model/data");
+const userModel = require("../models/user");
 
 const app = express();
 
@@ -167,9 +168,16 @@ app.post("/createAcc", (req, res) => {
                 email: email,
                 password: password
             }
-            data.addUser(tempUser);
+            // data.addUser(tempUser);
 
-            res.redirect("/accHome");
+            const user = new userModel(tempUser);
+            user.save().then(() => {
+                res.redirect("/accHome");
+            }).catch((err) => {
+                console.log(`MDB add user err: ${err}`);
+            });
+
+            // res.redirect("/accHome");
             // res.render("acc", {
             //     title: "Account",
             //     summary: true,
