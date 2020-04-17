@@ -7,6 +7,7 @@ const userSchema = new Schema({
     email: { type: String, unique: true },
     name: { type: String, required: true },
     password: { type: String, required: true },
+    ic: { type: Boolean, default:false },
     dateCreated: { type: Date, default: Date.now() }
 });
 

@@ -24,6 +24,7 @@ header * {
 
 header img {
     height: 100px;
+    width: auto;
 }
 
 nav {

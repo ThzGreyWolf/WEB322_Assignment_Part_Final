@@ -16,6 +16,7 @@ require('dotenv').config({
 
 const data = require("./model/data");
 const userModel = require("./model/user");
+const isLoggedIn = require("./middleware/auth");
 
 const app = express();
 
@@ -76,7 +77,7 @@ app.get("/createAcc", (req, res) => {
     });
 });
 
-app.get("/accHome", (req, res) => {
+app.get("/accHome", isLoggedIn, (req, res) => {
     res.render("acc", {
         title: "Account",
         summary: true,
@@ -92,7 +93,7 @@ app.get("/accHome", (req, res) => {
     // });
 });
 
-app.get("/accOrd", (req, res) => {
+app.get("/accOrd", isLoggedIn, (req, res) => {
     res.render("acc", {
         title: "Account",
         summary: false,
@@ -100,7 +101,7 @@ app.get("/accOrd", (req, res) => {
     });
 });
 
-app.get("/logout", (req, res) => {
+app.get("/logout", isLoggedIn, (req, res) => {
     req.session.destroy();
     res.redirect("/login");
 });
@@ -204,9 +205,9 @@ app.post("/createAcc", (req, res) => {
 
         if(!/[a-zA-Z0-9]{8,}/g.test(password)) {
             if(passErrMess == "") {
-                passErrMess += "Password must be a 8 charactors or longer, without spaces";
+                passErrMess += "Password must be a 8 charactors or longer, without spaces, excluding special characters";
             } else {
-                passErrMess += ", and be 8 charactors or longer, without spaces";
+                passErrMess += ", and be 8 charactors or longer, without spaces, excluding special characters";
             }
         }
     }
