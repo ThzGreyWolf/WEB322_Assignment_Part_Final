@@ -6,6 +6,7 @@ const express = require("express");
 const exphbs = require("express-handlebars");
 const bodyParser = require('body-parser');
 const mailSender = require('@sendgrid/mail');
+const mongoose = require('mongoose');
 
 require('dotenv').config({
     path: "./config/keys.env"
@@ -61,8 +62,8 @@ app.get("/accHome", (req, res) => {
     res.render("acc", {
         title: "Account",
         summary: true,
-        orders: false
-        // user: data.getUser(userEmail)
+        orders: false,
+        name: data.getUser(userEmail).name
     });
 });
 
@@ -161,20 +162,20 @@ app.post("/createAcc", (req, res) => {
             logedIn = true;
             userEmail = email;
 
-            // tempUser = {
-            //     name: name,
-            //     email: email,
-            //     password: password
-            // }
-            // data.addUser(tempUser);
-            
-            // res.redirect("/accHome");
-            res.render("acc", {
-                title: "Account",
-                summary: true,
-                orders: false,
-                name: name
-            });
+            tempUser = {
+                name: name,
+                email: email,
+                password: password
+            }
+            data.addUser(tempUser);
+
+            res.redirect("/accHome");
+            // res.render("acc", {
+            //     title: "Account",
+            //     summary: true,
+            //     orders: false,
+            //     name: name
+            // });
         }).catch(err => {
             console.log(`Error ${err}`);
         });
@@ -192,6 +193,14 @@ app.post("/createAcc", (req, res) => {
             rePassErr: rePassErrMess
         });
     }
+});
+
+mongoose.connect(process.env.MDB_CONN_STR, {useNewUrlParser: true, useUnifiedTopology: true}).then(() => {
+    // Callback for successful connection
+    console.log(`MDB Conn Successful!`);
+}).catch((err) => {
+    // Callback for unsuccessful connection
+    console.log(`MDB Conn Err: ${err}`);
 });
 
 const PORT = process.env.PORT;
