@@ -7,6 +7,8 @@ const exphbs = require("express-handlebars");
 const bodyParser = require('body-parser');
 const mailSender = require('@sendgrid/mail');
 const mongoose = require('mongoose');
+const session = require('express-session');
+const bcrypt = require('bcryptjs');
 
 require('dotenv').config({
     path: "./config/keys.env"
@@ -22,6 +24,21 @@ app.set('view engine', 'handlebars');
 mailSender.setApiKey(`${process.env.SENDGRID_API_KEY}`);
 
 app.use(express.static("assets"));
+
+// ======
+
+app.use(session({
+    secret: process.env.SESS_S_KEY,
+    resave: false,
+    saveUninitialized: true
+}));
+
+app.use((req, res, next) => {
+    res.locals.user = req.session.userInfo;
+    next();
+});
+
+// ====== 
 
 app.get("/", (req, res) => {
     res.render("home", {
@@ -60,16 +77,10 @@ app.get("/createAcc", (req, res) => {
 });
 
 app.get("/accHome", (req, res) => {
-    userModel.find({email:userEmail}).then((user) => {
-        const userName = user.name;
-        res.render("acc", {
-            title: "Account",
-            summary: true,
-            orders: false,
-            name: userName
-        });
-    }).catch((err) => {
-        console.log(`MDB find user err: ${err}`);
+    res.render("acc", {
+        title: "Account",
+        summary: true,
+        orders: false
     });
 
     // res.render("acc", {
@@ -89,24 +100,60 @@ app.get("/accOrd", (req, res) => {
     });
 });
 
+app.get("/logout", (req, res) => {
+    req.session.destroy();
+    res.redirect("/login");
+});
+
 app.use(bodyParser.urlencoded({ extended: false }))
 
 app.post("/logIn", (req, res) => {
-    let emailNull = false;
-    let passNull = false
+    let emailMess = "";
+    let passMess = ""
 
-    if(req.body.email == "") { emailNull = true; }
-    if(req.body.password == "") { passNull = true; }
+    if(req.body.email == "") { emailMess = "Enter your Email"; }
+    if(req.body.password == "") { passMess = "Enter your Password"; }
 
-    if(emailNull || passNull) {
+    if(emailMess != "" || passMess != "") {
         res.render("login", {
             title:"Log In",
             logInMode: true,
-            emailErr: emailNull,
-            passErr: passNull
+            emailErr: emailMess,
+            passErr: passMess
         });
     } else {
-        res.redirect("/");
+        userModel.findOne({email:req.body.email}).then((user) => {
+            if(!user) {
+                passMess = "Email and/or password is incorrect";
+                emailErrMess = " ";
+                res.render("login", {
+                    title:"Log In",
+                    logInMode: true,
+                    emailErr: emailMess,
+                    passErr: passMess
+                });
+            } else {
+                bcrypt.compare(req.body.password, user.password).then((success) => {
+                    if(!success) {
+                        passMess = "Email and/or password is incorrect";
+                        emailErrMess = " ";
+                        res.render("login", {
+                            title:"Log In",
+                            logInMode: true,
+                            emailErr: emailMess,
+                            passErr: passMess
+                        });
+                    } else {
+                        req.session.userInfo = user;
+                        res.redirect("/accHome");
+                    }
+                }).catch((err) => {
+                    console.log(`Err compare pass post /logIn: ${err}`)
+                });
+            }
+        }).catch((err) => {
+            console.log(`MDB find user err post /logIn: ${err}`);
+        });
     }
 });
 
@@ -125,7 +172,7 @@ app.post("/createAcc", (req, res) => {
     } else if(!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
         emailErrMess = "Email not Valid";
     } else {
-        userModel.find({email:req.body.email}).then((user) => {
+        userModel.findOne({email:req.body.email}).then((user) => {
             if(user) { emailErrMess = "An account with this email already exists"; }
         }).catch((err) => {
             console.log(`MDB find user err in post /createAcc: ${err}`);
@@ -192,6 +239,7 @@ app.post("/createAcc", (req, res) => {
 
                 const user = new userModel(tempUser);
                 user.save().then(() => {
+                    req.session.userInfo = user;
                     res.redirect("/accHome");
                 }).catch((err) => {
                     console.log(`MDB add user err: ${err}`);
@@ -221,7 +269,7 @@ app.post("/createAcc", (req, res) => {
                 rePassErr: rePassErrMess
             });
         }
-    }, 1000);
+    }, 3000);
 });
 
 mongoose.connect(process.env.MDB_CONN_STR, {useNewUrlParser: true, useUnifiedTopology: true}).then(() => {

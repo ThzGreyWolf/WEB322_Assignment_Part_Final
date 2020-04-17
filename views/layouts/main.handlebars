@@ -17,7 +17,12 @@
             <nav>
                 <ul>
                     <li><a href="/products">Products</a></li>
-                    <li><a href="/login">LogIn</a></li>
+                    {{#if user}}
+                        <li><a href="/accHome">Profile</a></li>
+                    {{else}}
+                        <li><a href="/login">LogIn</a></li>
+                    {{/if}}
+
                 </ul>
             </nav>
             <h4>Where products are UNREAL</h4>
