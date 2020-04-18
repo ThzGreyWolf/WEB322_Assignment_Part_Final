@@ -18,6 +18,7 @@ const categoryModel = require("./model/category");
 const productModel = require("./model/product");
 
 const isLoggedIn = require("./middleware/auth");
+const isIC = require("./middleware/icAuth");
 
 const app = express();
 
@@ -38,6 +39,8 @@ app.use(session({
 
 app.use((req, res, next) => {
     res.locals.user = req.session.userInfo;
+    res.locals.cartItems = req.session.cartItems;
+    res.locals.cartTotal = req.session.totalPrice;
     next();
 });
 
@@ -45,9 +48,7 @@ app.use((req, res, next) => {
 
 app.get("/", (req, res) => {
     categoryModel.find().then((allCats) => {
-        const filteredCats = []; // = allCats.map((cat) => {
-        //     return { id: cat._id, name: cat.name, img: cat.image }
-        // });
+        const filteredCats = [];
         for(let i = 0; i < 4; i++) {
             filteredCats.push({ 
                 id: allCats[i]._id, 
@@ -56,9 +57,7 @@ app.get("/", (req, res) => {
             });
         }
         productModel.find({isBS:true}).then((allProds) => {
-            const filteredProds = []; // = allCats.map((cat) => {
-            //     return { id: cat._id, name: cat.name, img: cat.image }
-            // });
+            const filteredProds = [];
             let val = allProds.length > 4 ? 4 : allProds.length;
             for(let i = 0; i < val; i++) {
                 filteredProds.push({ 
@@ -80,13 +79,14 @@ app.get("/", (req, res) => {
     });
 });
 
-app.get("/products", (req, res) => {
+app.get("/products/:catId", (req, res) => {
     categoryModel.find().then((allCats) => {
         const filteredCats = allCats.map((cat) => {
             return { id: cat._id, name: cat.name, img: cat.image }
         });
 
-        productModel.find().then((allProds) => {
+        const id = req.params.catId == "all" ? null : {category:req.params.catId};
+        productModel.find(id).then((allProds) => {
             const filteredProds = allProds.map((prod) => {
                 return { id: prod._id, name: prod.name, img: prod.img, price: prod.price }
             });
@@ -100,6 +100,25 @@ app.get("/products", (req, res) => {
         });
     }).catch((err) => {
         console.log(`Err getting categories: ${err}`);
+    });
+});
+
+app.get("/prod/:prodId", (req, res) => {
+    productModel.findOne({_id:req.params.prodId}).then((fullProd) => {
+        const filteredProd =  { 
+            id: fullProd._id, 
+            name: fullProd.name,
+            desc: fullProd.desc,
+            qnty: fullProd.quantity, 
+            img: fullProd.img, 
+            price: fullProd.price };
+
+        res.render("prodDetails", {
+            title:filteredProd.name,
+            product: filteredProd
+        });
+    }).catch((err) => {
+        console.log(`Err getting products: ${err}`);
     });
 });
 
@@ -127,14 +146,6 @@ app.get("/accHome", isLoggedIn, (req, res) => {
         summary: true,
         orders: false
     });
-
-    // res.render("acc", {
-    //     title: "Account",
-    //     summary: true,
-    //     orders: false,
-    //     name: userName
-    //     // name: data.getUser(userEmail).name
-    // });
 });
 
 app.get("/accOrd", isLoggedIn, (req, res) => {
@@ -150,7 +161,7 @@ app.get("/logout", isLoggedIn, (req, res) => {
     res.redirect("/login");
 });
 
-app.get("/addProd", isLoggedIn, (req, res) => {
+app.get("/addProd", isLoggedIn, isIC, (req, res) => {
     categoryModel.find().then((allCats) => {
         const filteredCats = allCats.map((cat) => {
             return { id: cat._id, name: cat.name, img: cat.image }
@@ -161,6 +172,47 @@ app.get("/addProd", isLoggedIn, (req, res) => {
         });
     }).catch((err) => {
         console.log(`Err getting categories: ${err}`);
+    });
+});
+
+app.get("/placeOrder", isLoggedIn, (req, res) => {
+    let mailHtml = 
+    `<h2>Thank you ${req.session.userInfo.name} for your order.</h2>
+    <br>
+    <h4>Order Details</h4>
+    <br>
+    <table border="1" style="text-align: center;">
+        <thead>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+        </thead>
+        <tbody>`;
+        
+    for(let i = 0; i < req.session.cartItems.length; i++) {
+        let item = req.session.cartItems[i];
+        mailHtml += `<tr><td>${item.name}</td><td>CDN$ ${item.price}</td><td>${item.quty}</td><td>CDN$ ${item.total}</td></tr>`;
+    }
+
+    mailHtml += `<tr><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td>Order Total:</td><td>CDN$ ${req.session.totalPrice}</td></tr>
+    </tbody>
+    </table>`;
+
+    const mail = {
+        to: req.session.userInfo.email,
+        from: `karuldas1@myseneca.ca`,
+        subject: `Order reciept`,
+        html: mailHtml
+    };
+
+    mailSender.send(mail).then(() => {
+        req.session.cartItems = null;
+        req.session.totalPrice = null;
+        res.redirect("/");
+    }).catch(err => {
+        console.log(`Error ${err}`);
     });
 });
 
@@ -291,7 +343,6 @@ app.post("/createAcc", (req, res) => {
                     email: email,
                     password: password
                 }
-                // data.addUser(tempUser);
 
                 const user = new userModel(tempUser);
                 user.save().then(() => {
@@ -300,14 +351,6 @@ app.post("/createAcc", (req, res) => {
                 }).catch((err) => {
                     console.log(`MDB add user err: ${err}`);
                 });
-
-                // res.redirect("/accHome");
-                // res.render("acc", {
-                //     title: "Account",
-                //     summary: true,
-                //     orders: false,
-                //     name: name
-                // });
             }).catch(err => {
                 console.log(`Error ${err}`);
             });
@@ -328,7 +371,7 @@ app.post("/createAcc", (req, res) => {
     }, 3000);
 });
 
-app.post("/addProd", isLoggedIn, (req, res) => {
+app.post("/addProd", isLoggedIn, isIC, (req, res) => {
     const {name, price, desc, category, qnty, isBS} = req.body;
     let image = null;
     if(req.files) {
@@ -385,6 +428,34 @@ app.post("/addProd", isLoggedIn, (req, res) => {
             console.log(`Err getting categories: ${err}`);
         });
     }
+});
+
+app.post("/addToCart/:prodId", isLoggedIn, (req, res) => {
+    productModel.findById(req.params.prodId).then((prod) => {
+        const tempCartObj = {
+            name: prod.name,
+            price: prod.price,
+            img: prod.img,
+            quty: req.body.qnty,
+            total: (prod.price * req.body.qnty)
+        }
+        
+        if(req.session.cartItems) {
+            req.session.cartItems.push(tempCartObj);
+        } else {
+           req.session.cartItems = [tempCartObj]; 
+        }
+
+        if(req.session.totalPrice) {
+            req.session.totalPrice += tempCartObj.total;
+        } else {
+           req.session.totalPrice = tempCartObj.total; 
+        }
+  
+        res.redirect('back');
+    }).catch((err) => {
+        console.log(`${err}`);
+    });
 });
 
 mongoose.connect(process.env.MDB_CONN_STR, {useNewUrlParser: true, useUnifiedTopology: true}).then(() => {

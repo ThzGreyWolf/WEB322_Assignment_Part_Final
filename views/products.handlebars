@@ -1,20 +1,23 @@
 <section id="productsPage">
     <section id="prodCats">
         <ul>
+            <li><a href="/products/all">All</a></li>
             {{#each categories}}
-                <li><a href="">{{this.name}}</a></li>
+                <li><a href="/products/{{this.id}}">{{this.name}}</a></li>
             {{/each}}
         </ul>
     </section>
     <section id="productList">
         {{#each products}}
-            <div>
-                <img src={{this.img}} alt="Product Image">
+            <a href="/prod/{{this.id}}">
                 <div>
-                    <p>{{this.name}}</p>
-                    <p>CAN$ {{this.price}}</p>
+                    <img src={{this.img}} alt="Product Image">
+                    <div>
+                        <p>{{this.name}}</p>
+                        <p>CDN$ {{this.price}}</p>
+                    </div>
                 </div>
-            </div>
+            </a>
         {{/each}}
     </section>
 </section>    

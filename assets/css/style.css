@@ -99,6 +99,12 @@ main a, main input[type=submit] {
     text-align: center;
 }
 
+#cats a, #topSold a {
+    border: none;
+    background-color: transparent;
+    width: auto;
+}
+
 #cats img {
     margin-top: .5rem;
 }
@@ -124,6 +130,12 @@ main a, main input[type=submit] {
 
 #prodCats a {
     margin: 0;
+}
+
+#productList a {
+    border: none;
+    background-color: transparent;
+    width: auto;
 }
 
 #productList {
@@ -156,7 +168,7 @@ main a, main input[type=submit] {
 #loginForm input[type=text], #loginForm input[type=password],
 #createForm input[type=text], #createForm input[type=password],
 #addProdForm input[type=text], #addProdForm input[type=number],
-#addProdForm textarea, #addProdForm select  {
+#addProdForm textarea, #addProdForm select {
     width: 90%;
     max-width: 90%;
     min-width: 90%;
@@ -202,10 +214,10 @@ main a, main input[type=submit] {
 #dashboard > #views {
     text-align: center;
     box-shadow: inset 0 2.5px 10px #00797e;
-    height: 30rem;
+     min-height: 30rem;
 }
 
-#dashboard > #views div {
+#dashboard > #views > div {
     padding: 2rem;
     display: none;
 }
@@ -214,10 +226,51 @@ main a, main input[type=submit] {
     display: block;
 }
 
+#dashboard > #views > div:nth-child(2) > div {
+    display: grid;
+    grid-template-columns: 3fr 4fr 3fr;
+    max-height: 100px;
+}
+
+#dashboard > #views > div:nth-child(2) > div img {
+    height: 90px;
+    width: auto;
+}
+
+#prodDetails {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+
+    max-width: 80%;
+    margin: auto;
+}
+
+#prodDetails > div:nth-child(2) {
+    padding: 1rem;
+}
+
+#prodDetails > div:nth-child(2) > form input[type=number]  {
+    width: 10%;
+    padding: 10px 0 10px 5%;
+    margin: .5rem 0 0 0;
+
+    border-radius: 5px;
+}
+
+#prodDetails > div:nth-child(2) > form input[type=submit] {
+    width: 30%;
+    padding: 10px 5%;
+    margin: .5rem 0 0 0;
+
+    border-radius: 5px;
+    font-family: 'Merriweather', serif;
+}
+
+#prodDetails > div:nth-child(2) > form input[type=submit]:hover {
+    cursor: pointer;
+}
+
 footer {
-    /* height: 3rem; */
-    /* line-height: 3rem; */
-    /* text-align: center; */
     box-shadow: 0px -5px 10px #00797e;
 
     padding: 1.5rem;

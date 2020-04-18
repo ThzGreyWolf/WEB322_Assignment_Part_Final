@@ -1,6 +1,5 @@
 {{!-- Promo --}}
 <section id="promo">
-    {{!-- TODO:NOTE: Have to list of headdings to loop through --}}
     <h1 id="promoH1">Welcome to our Amazon!!</h1>
     <div>
         {{#if user}}
@@ -16,8 +15,10 @@
 <section id="cats" class="homeProdSecs">
     {{#each categories}}
         <div>
-            {{this.name}}
-            <img src={{this.img}} alt="Category Image">
+            <a href="/products/{{this.id}}">
+                {{this.name}}
+                <img src={{this.img}} alt="Category Image">
+            </a>
         </div>
     {{/each}}
 </section>
@@ -26,8 +27,10 @@
 <section id="topSold" class="homeProdSecs">
     {{#each topSold}}
         <div>
-            <img src="{{this.img}}" alt="Product Image">
-            {{this.name}}
+            <a href="/prod/{{this.id}}">
+                <img src="{{this.img}}" alt="Product Image">
+                {{this.name}}
+            </a>
         </div>
     {{/each}}
 </section>

@@ -2,18 +2,34 @@
     <div id="menu">
         <ul>
             <li><a href="/accHome">Home</a></li>
-            <li><a href="/accOrd">Orders</a></li>
+            <li><a href="/accOrd">Cart</a></li>
             {{#if user.ic}}<li><a href="/addProd">Add Product</a></li>{{/if}}
             <li><a href="/logout">Logout</a></li>
         </ul>
     </div>
     <div id="views">
         <div {{#if summary}}id="active"{{/if}}>
-            {{!-- <h2>Welcome {{user.name}} to Amazon!!</h2> --}}
             <h2>Welcome {{user.name}} to Amazon!!</h2>
         </div>
         <div {{#if orders}}id="active"{{/if}}>
-            <p>No Orders...</p>
+            {{#if cartItems}}
+                {{#each cartItems}}
+                    <div>
+                        <div><img src={{this.img}} alt="Product Image"></div>
+                        <div>
+                            <h4>{{this.name}}</h4>
+                            <p>CDN$ {{this.price}}</p>
+                            <p>Quantity: {{this.quty}}</p>
+                        </div>
+                        <div>
+                            <p>CDN$ {{this.total}}</p>
+                        </div>
+                    </div>
+                {{/each}}
+                <p><span><a href="/placeOrder">Place Order</a></span> Total: CDN$ {{cartTotal}}</p>
+            {{else}}
+                <p>There are no items in your cart...</p>
+            {{/if}}
         </div>
     </div>
 </section>

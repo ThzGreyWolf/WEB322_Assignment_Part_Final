@@ -1,0 +1,16 @@
+<section id="prodDetails">
+    <div>
+        <img src={{product.img}} alt="Product Image">
+    </div>
+    <div>
+        <h4>{{product.name}}</h4>
+        <p>CDN$ {{product.price}}</p>
+        <p>{{product.desc}}</p>
+        <form action="/addToCart/{{product.id}}" method="POST">
+            <label for="qnty">Quantity</label>
+            <input type="number" id="qnty" name="qnty" min="1" max="{{product.qnty}}" value="1"><br>
+            <br>
+            <input type="submit" value="Add to Cart">
+        </form>
+    </div>
+</section>
