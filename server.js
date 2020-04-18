@@ -1,7 +1,3 @@
-// TODO: Figure out another way
-let loggedIn = false;
-let userEmail = null;
-
 const express = require("express");
 const exphbs = require("express-handlebars");
 const bodyParser = require('body-parser');
@@ -9,6 +5,8 @@ const mailSender = require('@sendgrid/mail');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
+const fileUpload = require('express-fileupload');
+const path = require("path");
 
 require('dotenv').config({
     path: "./config/keys.env"
@@ -16,6 +14,9 @@ require('dotenv').config({
 
 const data = require("./model/data");
 const userModel = require("./model/user");
+const categoryModel = require("./model/category");
+const productModel = require("./model/product");
+
 const isLoggedIn = require("./middleware/auth");
 
 const app = express();
@@ -25,6 +26,7 @@ app.set('view engine', 'handlebars');
 mailSender.setApiKey(`${process.env.SENDGRID_API_KEY}`);
 
 app.use(express.static("assets"));
+app.use(fileUpload());
 
 // ======
 
@@ -42,26 +44,68 @@ app.use((req, res, next) => {
 // ====== 
 
 app.get("/", (req, res) => {
-    res.render("home", {
-        title:"Home",
-        categories: data.getCategories(),
-        topSold: data.getProductsSorted("bs", 4)
-        // loggedIn: loggedIn,
-        // user: data.getUser(userEmail)
+    categoryModel.find().then((allCats) => {
+        const filteredCats = []; // = allCats.map((cat) => {
+        //     return { id: cat._id, name: cat.name, img: cat.image }
+        // });
+        for(let i = 0; i < 4; i++) {
+            filteredCats.push({ 
+                id: allCats[i]._id, 
+                name: allCats[i].name, 
+                img: allCats[i].img 
+            });
+        }
+        productModel.find({isBS:true}).then((allProds) => {
+            const filteredProds = []; // = allCats.map((cat) => {
+            //     return { id: cat._id, name: cat.name, img: cat.image }
+            // });
+            let val = allProds.length > 4 ? 4 : allProds.length;
+            for(let i = 0; i < val; i++) {
+                filteredProds.push({ 
+                    id: allProds[i]._id, 
+                    name: allProds[i].name, 
+                    img: allProds[i].img 
+                });
+            }
+            res.render("home", {
+                title:"Home",
+                categories: filteredCats,
+                topSold: filteredProds
+            });
+        }).catch((err) => {
+            console.log(`Err getting products: ${err}`);
+        });
+    }).catch((err) => {
+        console.log(`Err getting categories: ${err}`);
     });
 });
 
 app.get("/products", (req, res) => {
-    res.render("products", {
-        title:"Products",
-        products: data.getProducts(),
-        categories: data.getCategories()
+    categoryModel.find().then((allCats) => {
+        const filteredCats = allCats.map((cat) => {
+            return { id: cat._id, name: cat.name, img: cat.image }
+        });
+
+        productModel.find().then((allProds) => {
+            const filteredProds = allProds.map((prod) => {
+                return { id: prod._id, name: prod.name, img: prod.img, price: prod.price }
+            });
+            res.render("products", {
+                title:"Products",
+                products: filteredProds,
+                categories: filteredCats
+            });
+        }).catch((err) => {
+            console.log(`Err getting products: ${err}`);
+        });
+    }).catch((err) => {
+        console.log(`Err getting categories: ${err}`);
     });
 });
 
 app.get("/login", (req, res) => {
-    if(loggedIn) {
-        res.redirect("/");
+    if(req.session.userInfo) {
+        res.redirect("/accHome");
     } else {
         res.render("login", {
             title:"Log In",
@@ -104,6 +148,20 @@ app.get("/accOrd", isLoggedIn, (req, res) => {
 app.get("/logout", isLoggedIn, (req, res) => {
     req.session.destroy();
     res.redirect("/login");
+});
+
+app.get("/addProd", isLoggedIn, (req, res) => {
+    categoryModel.find().then((allCats) => {
+        const filteredCats = allCats.map((cat) => {
+            return { id: cat._id, name: cat.name, img: cat.image }
+        });
+        res.render("addProd", {
+            title: "Add Product",
+            categories: filteredCats
+        });
+    }).catch((err) => {
+        console.log(`Err getting categories: ${err}`);
+    });
 });
 
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -228,9 +286,6 @@ app.post("/createAcc", (req, res) => {
             };
 
             mailSender.send(mail).then(() => {
-                logedIn = true;
-                userEmail = email;
-
                 tempUser = {
                     name: name,
                     email: email,
@@ -271,6 +326,65 @@ app.post("/createAcc", (req, res) => {
             });
         }
     }, 3000);
+});
+
+app.post("/addProd", isLoggedIn, (req, res) => {
+    const {name, price, desc, category, qnty, isBS} = req.body;
+    let image = null;
+    if(req.files) {
+        image = req.files.image;
+    }
+
+    let nameErr = "";
+    let descErr = "";
+    let imgErr = "";
+
+    if(name == "") { nameErr = "Product must have a name"; }
+    if(desc == "") { descErr = "Product must have a description"; }
+    if(!image) { imgErr = "Product must have an image"; } else {
+        if(!image.mimetype.includes("jpeg") && image.mimetype.includes("jpg") && !image.mimetype.includes("png")) {
+            imgErr = "The image must be a JPEG or a PNG";
+        }
+    }
+
+    if(!nameErr && !descErr && !imgErr) {
+        image.name = `${req.session.userInfo._id}${image.name}${path.parse(image.name).ext}`;
+        image.mv(`assets/img/product/${image.name}`).then(() => {
+            tempProd = {
+                name: name,
+                price: price,
+                desc: desc,
+                img: `/img/product/${image.name}`,
+                category: category,
+                isBS: isBS,
+                quantity: qnty
+            }
+
+            const prod = new productModel(tempProd);
+            prod.save().then(() => {
+                res.redirect("/addProd");
+            }).catch((err) => {
+                console.log(`MDB add prod err: ${err}`);
+            });
+        }).catch((err) => {
+            console.log(`${err}`);
+        });
+    } else {
+        categoryModel.find().then((allCats) => {
+            const filteredCats = allCats.map((cat) => {
+                return { id: cat._id, name: cat.name, img: cat.image }
+            });
+            res.render("addProd", {
+                title: "Add Product",
+                categories: filteredCats,
+                nameErr: nameErr,
+                descErr: descErr,
+                imgErr: imgErr
+            });
+        }).catch((err) => {
+            console.log(`Err getting categories: ${err}`);
+        });
+    }
 });
 
 mongoose.connect(process.env.MDB_CONN_STR, {useNewUrlParser: true, useUnifiedTopology: true}).then(() => {

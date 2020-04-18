@@ -1,0 +1,35 @@
+<section id="addProdForm">
+    <h3>Add Product</h3>
+    <form action="/addProd" method="POST" enctype="multipart/form-data">
+        <label for="name">Name</label><br>
+        <input type="text" id="name" name="name" {{#if nameErr}}class="errBox"{{/if}}><br>
+         {{#if nameErr}}<lable for="name" class="errMess"><i class="fas fa-exclamation-circle"></i>{{nameErr}}</lable>{{/if}}
+        <br>
+        <label for="price">Price</label><br>
+        <input type="number" id="price" name="price" min="0" value="0" step=".01"><br>
+        <br>
+        <label for="desc">Description</label><br>
+        <textarea id="desc" name="desc" {{#if descErr}}class="errBox"{{/if}}></textarea><br>
+        {{#if descErr}}<lable for="name" class="errMess"><i class="fas fa-exclamation-circle"></i>{{descErr}}</lable>{{/if}}
+        <br>
+        <label for="category">Category</label><br>
+        <select id="category" name="category">
+            {{#each categories}}
+                <option value={{this.id}}>{{this.name}}</option>
+            {{/each}}
+        </select><br>
+        <br>
+        <label for="qnty">Quantity</label><br>
+        <input type="number" id="qnty" name="qnty" min="0" value="0"><br>
+        <br>
+        <input type="checkbox" id="isBS" name="isBS" value="true">
+        <label for="isBS"> Best Seller</label><br>
+        <br>
+        <label for="image">Image</label><br>
+        <input type="file" id="image" name="image" {{#if imgErr}}class="errBox"{{/if}}><br>
+        {{#if imgErr}}<lable for="name" class="errMess"><i class="fas fa-exclamation-circle"></i>{{imgErr}}</lable>{{/if}}
+        <br>
+        <input type="submit" value="Add Product">
+    </form>
+    <a href="/accHome">Cancel</a>
+</section>

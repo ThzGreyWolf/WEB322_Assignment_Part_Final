@@ -17,7 +17,7 @@
     {{#each categories}}
         <div>
             {{this.name}}
-            <img src="{{this.img}}" alt="Category Image">
+            <img src={{this.img}} alt="Category Image">
         </div>
     {{/each}}
 </section>
@@ -27,6 +27,7 @@
     {{#each topSold}}
         <div>
             <img src="{{this.img}}" alt="Product Image">
+            {{this.name}}
         </div>
     {{/each}}
 </section>
